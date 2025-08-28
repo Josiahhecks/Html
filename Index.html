@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Join My Roblox Private Server</title>
+
+  <!-- Optional styling (feel free to tweak) -->
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: #111;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .card {
+      background: #1e1e1e;
+      padding: 2.5rem 3.5rem;
+      border-radius: 12px;
+      box-shadow: 0 8px 24px rgba(0,0,0,.4);
+      text-align: center;
+    }
+    h1 {
+      margin-top: 0;
+      font-size: 1.6rem;
+    }
+    .btn {
+      display: inline-block;
+      margin: .5rem .25rem;
+      padding: .75rem 1.5rem;
+      border: none;
+      border-radius: 6px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background .2s;
+    }
+    .notify {
+      background: #ff4757;
+      color: #fff;
+    }
+    .copy {
+      background: #1e90ff;
+      color: #fff;
+    }
+    .btn:hover {
+      filter: brightness(1.1);
+    }
+    #toast {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #333;
+      color: #fff;
+      padding: .75rem 1.25rem;
+      border-radius: 4px;
+      opacity: 0;
+      transition: opacity .3s;
+    }
+    #toast.show {
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>My Roblox Private Server</h1>
+    <button class="btn notify" onclick="notifyHost()">Notify Host</button>
+    <button class="btn copy" onclick="copyLink()">Copy Private-Server Link</button>
+  </div>
+
+  <!-- Toast notification -->
+  <div id="toast"></div>
+
+  <script>
+    // Your private-server link
+    const privateServerLink =
+      'https://www.roblox.com/games/2753915549?privateServerLinkCode=46411615760035887249335695162756';
+
+    function notifyHost() {
+      // Sends a simple ping to Netlify serverless function or external service
+      fetch('/.netlify/functions/notify', { method: 'POST' })
+        .then(() => toast('Host has been notified!'))
+        .catch(() => toast('Could not notify host.'));
+    }
+
+    function copyLink() {
+      navigator.clipboard.writeText(privateServerLink)
+        .then(() => toast('Link copied to clipboard!'))
+        .catch(() => fallbackCopy());
+    }
+
+    function fallbackCopy() {
+      // Older browsers fallback
+      const ta = document.createElement('textarea');
+      ta.value = privateServerLink;
+      ta.style.position = 'fixed';
+      ta.style.opacity = 0;
+      document.body.appendChild(ta);
+      ta.select();
+      try {
+        document.execCommand('copy');
+        toast('Link copied to clipboard!');
+      } catch (err) {
+        toast('Could not copy, please select & copy manually.');
+      }
+      document.body.removeChild(ta);
+    }
+
+    function toast(msg) {
+      const el = document.getElementById('toast');
+      el.textContent = msg;
+      el.classList.add('show');
+      setTimeout(() => el.classList.remove('show'), 2000);
+    }
+  </script>
+</body>
+</html>
