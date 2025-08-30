@@ -2,69 +2,50 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Roblox VIP Servers + Snake</title>
+  <title>Roblox VIP Portal</title>
   <style>
     body {
       margin: 0;
-      padding: 0;
       font-family: Arial, sans-serif;
-      color: white;
-      text-align: center;
+      overflow: hidden;
       background: black;
-      overflow-x: hidden;
+      color: #fff;
     }
 
-    canvas#bg {
+    /* Cyberpunk animated gradient background */
+    .background {
       position: fixed;
-      top: 0;
-      left: 0;
       width: 100%;
       height: 100%;
+      background: linear-gradient(-45deg, #ff00cc, #3333ff, #00ffff, #ff9900);
+      background-size: 400% 400%;
+      animation: gradient 10s ease infinite;
       z-index: -1;
     }
+    @keyframes gradient {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
 
-    .server-list {
-      margin: 20px auto;
-      max-width: 600px;
-      background: rgba(0,0,0,0.6);
+    .container {
+      text-align: center;
+      margin-top: 50px;
+    }
+
+    .card {
+      background: rgba(0, 0, 0, 0.7);
+      border: 2px solid cyan;
+      border-radius: 15px;
       padding: 20px;
-      border-radius: 15px;
-      box-shadow: 0 0 20px rgba(255,255,255,0.2);
+      display: inline-block;
+      box-shadow: 0 0 20px cyan;
     }
 
-    .server {
-      margin: 15px 0;
-      padding: 10px;
-      border: 1px solid #444;
-      border-radius: 8px;
-      background: rgba(255,255,255,0.1);
-    }
-
-    .server button {
-      margin-top: 10px;
-      padding: 8px 16px;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      background: #00ccff;
-      color: black;
-      font-weight: bold;
-    }
-
-    #snake-container {
-      margin: 30px auto;
-      width: 400px;
-      background: rgba(0,0,0,0.7);
-      padding: 15px;
-      border-radius: 15px;
-    }
-
-    #snake-game {
-      border: 2px solid white;
+    #snakeCanvas {
       background: #111;
-      display: block;
-      margin: auto;
+      border: 2px solid lime;
+      margin-top: 20px;
     }
 
     .controls {
@@ -72,163 +53,131 @@
     }
 
     .controls button {
-      padding: 10px;
+      background: #111;
+      border: 2px solid lime;
+      color: lime;
+      font-size: 20px;
       margin: 5px;
-      background: #00ccff;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: bold;
+      padding: 10px;
+      border-radius: 5px;
+    }
+
+    iframe {
+      margin-top: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 15px magenta;
     }
   </style>
 </head>
 <body>
-  <canvas id="bg"></canvas>
+  <div class="background"></div>
 
-  <h1>Roblox VIP Servers</h1>
+  <div class="container">
+    <div class="card">
+      <h2>🎮 Roblox VIP Server Portal 🎮</h2>
+      <input id="username" type="text" placeholder="Enter Roblox Username">
+      <button onclick="fetchAvatar()">Login</button>
+      <div id="avatar"></div>
 
-  <div class="server-list">
-    <div class="server">
-      <p>Server 1</p>
-      <button onclick="copyLink('https://www.roblox.com/games/2753915549?privateServerLinkCode=46411615760035887249335695162756')">Copy Link</button>
-      <button onclick="window.open('https://www.roblox.com/games/2753915549?privateServerLinkCode=46411615760035887249335695162756','_blank')">Join</button>
-    </div>
-    <div class="server">
-      <p>Server 2</p>
-      <button onclick="copyLink('YOUR_SERVER_2')">Copy Link</button>
-      <button onclick="window.open('YOUR_SERVER_2','_blank')">Join</button>
-    </div>
-    <div class="server">
-      <p>Server 3</p>
-      <button onclick="copyLink('YOUR_SERVER_3')">Copy Link</button>
-      <button onclick="window.open('YOUR_SERVER_3','_blank')">Join</button>
-    </div>
-  </div>
+      <!-- Snake game -->
+      <canvas id="snakeCanvas" width="300" height="300"></canvas>
+      <div class="controls">
+        <button onclick="move('up')">⬆️</button><br>
+        <button onclick="move('left')">⬅️</button>
+        <button onclick="move('down')">⬇️</button>
+        <button onclick="move('right')">➡️</button>
+      </div>
 
-  <div id="snake-container">
-    <h2>Snake Game 🎮</h2>
-    <canvas id="snake-game" width="400" height="400"></canvas>
-    <div class="controls">
-      <button onclick="setDirection('UP')">⬆️</button><br>
-      <button onclick="setDirection('LEFT')">⬅️</button>
-      <button onclick="setDirection('DOWN')">⬇️</button>
-      <button onclick="setDirection('RIGHT')">➡️</button>
+      <!-- YouTube music embed -->
+      <iframe width="300" height="150" src="https://www.youtube.com/embed/TQAgg_7vH0c?autoplay=1&mute=0" allow="autoplay"></iframe>
     </div>
   </div>
-
-  <!-- YouTube Music -->
-  <iframe width="0" height="0" src="https://www.youtube.com/embed/TQAgg_7vH0c?autoplay=1&loop=1&playlist=TQAgg_7vH0c" frameborder="0" allow="autoplay"></iframe>
 
   <script>
-    // Background animation
-    const canvas = document.getElementById('bg');
-    const ctx = canvas.getContext('2d');
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-
-    let particles = [];
-    for (let i = 0; i < 100; i++) {
-      particles.push({
-        x: Math.random() * canvas.width,
-        y: Math.random() * canvas.height,
-        dx: (Math.random() - 0.5) * 2,
-        dy: (Math.random() - 0.5) * 2,
-        size: Math.random() * 3 + 1
-      });
-    }
-
-    function drawParticles() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.fillStyle = 'white';
-      particles.forEach(p => {
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-        ctx.fill();
-        p.x += p.dx;
-        p.y += p.dy;
-        if (p.x < 0 || p.x > canvas.width) p.dx *= -1;
-        if (p.y < 0 || p.y > canvas.height) p.dy *= -1;
-      });
-      requestAnimationFrame(drawParticles);
-    }
-    drawParticles();
-
-    // Copy link
-    function copyLink(link) {
-      navigator.clipboard.writeText(link).then(() => {
-        alert("Copied: " + link);
-      });
+    // Roblox Avatar Fetch
+    async function fetchAvatar() {
+      const username = document.getElementById('username').value;
+      const res = await fetch(`https://api.roblox.com/users/get-by-username?username=${username}`);
+      const data = await res.json();
+      if (data.Id) {
+        const avatarUrl = `https://www.roblox.com/headshot-thumbnail/image?userId=${data.Id}&width=180&height=180&format=png`;
+        document.getElementById('avatar').innerHTML = `<img src="${avatarUrl}" style="border-radius:50%;margin-top:10px;">`;
+      } else {
+        document.getElementById('avatar').innerText = "User not found.";
+      }
     }
 
     // Snake Game
-    const gameCanvas = document.getElementById("snake-game");
-    const gtx = gameCanvas.getContext("2d");
-    const box = 20;
-    let snake = [{x: 9 * box, y: 10 * box}];
-    let direction = null;
+    const canvas = document.getElementById("snakeCanvas");
+    const ctx = canvas.getContext("2d");
+    let box = 15;
+    let snake = [{ x: 10 * box, y: 10 * box }];
     let food = {
-      x: Math.floor(Math.random()*20)*box,
-      y: Math.floor(Math.random()*20)*box
+      x: Math.floor(Math.random() * 20) * box,
+      y: Math.floor(Math.random() * 20) * box
     };
+    let direction;
 
-    function setDirection(dir) {
-      if (dir === "LEFT" && direction !== "RIGHT") direction = "LEFT";
-      if (dir === "UP" && direction !== "DOWN") direction = "UP";
-      if (dir === "RIGHT" && direction !== "LEFT") direction = "RIGHT";
-      if (dir === "DOWN" && direction !== "UP") direction = "DOWN";
-    }
-
-    document.addEventListener("keydown", e => {
-      if (e.key === "ArrowLeft") setDirection("LEFT");
-      if (e.key === "ArrowUp") setDirection("UP");
-      if (e.key === "ArrowRight") setDirection("RIGHT");
-      if (e.key === "ArrowDown") setDirection("DOWN");
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowUp" && direction !== "down") direction = "up";
+      if (e.key === "ArrowDown" && direction !== "up") direction = "down";
+      if (e.key === "ArrowLeft" && direction !== "right") direction = "left";
+      if (e.key === "ArrowRight" && direction !== "left") direction = "right";
     });
 
-    function drawSnakeGame() {
-      gtx.fillStyle = "#111";
-      gtx.fillRect(0, 0, 400, 400);
+    function move(dir) {
+      if (dir === "up" && direction !== "down") direction = "up";
+      if (dir === "down" && direction !== "up") direction = "down";
+      if (dir === "left" && direction !== "right") direction = "left";
+      if (dir === "right" && direction !== "left") direction = "right";
+    }
+
+    function draw() {
+      ctx.fillStyle = "#000";
+      ctx.fillRect(0, 0, 300, 300);
 
       for (let i = 0; i < snake.length; i++) {
-        gtx.fillStyle = i === 0 ? "lime" : "green";
-        gtx.fillRect(snake[i].x, snake[i].y, box, box);
+        ctx.fillStyle = i === 0 ? "lime" : "green";
+        ctx.fillRect(snake[i].x, snake[i].y, box, box);
       }
 
-      gtx.fillStyle = "red";
-      gtx.fillRect(food.x, food.y, box, box);
+      ctx.fillStyle = "red";
+      ctx.fillRect(food.x, food.y, box, box);
 
       let snakeX = snake[0].x;
       let snakeY = snake[0].y;
 
-      if (direction === "LEFT") snakeX -= box;
-      if (direction === "UP") snakeY -= box;
-      if (direction === "RIGHT") snakeX += box;
-      if (direction === "DOWN") snakeY += box;
+      if (direction === "up") snakeY -= box;
+      if (direction === "down") snakeY += box;
+      if (direction === "left") snakeX -= box;
+      if (direction === "right") snakeX += box;
 
       if (snakeX === food.x && snakeY === food.y) {
         food = {
-          x: Math.floor(Math.random()*20)*box,
-          y: Math.floor(Math.random()*20)*box
+          x: Math.floor(Math.random() * 20) * box,
+          y: Math.floor(Math.random() * 20) * box
         };
       } else {
         snake.pop();
       }
 
-      let newHead = {x: snakeX, y: snakeY};
+      let newHead = { x: snakeX, y: snakeY };
 
       if (
-        snakeX < 0 || snakeX >= 400 || snakeY < 0 || snakeY >= 400 ||
-        snake.some(seg => seg.x === newHead.x && seg.y === newHead.y)
+        snakeX < 0 ||
+        snakeY < 0 ||
+        snakeX >= 300 ||
+        snakeY >= 300 ||
+        snake.some(s => s.x === snakeX && s.y === snakeY)
       ) {
-        alert("Game Over! Refresh to play again.");
-        snake = [{x: 9*box, y: 10*box}];
-        direction = null;
+        clearInterval(game);
+        alert("Game Over!");
       }
 
       snake.unshift(newHead);
     }
 
-    setInterval(drawSnakeGame, 150);
+    let game = setInterval(draw, 100);
   </script>
 </body>
 </html>
