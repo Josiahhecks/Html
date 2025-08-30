@@ -2,64 +2,149 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Roblox VIP Server Discover</title>
+  <title>Roblox VIP Discover - Cyber UI</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background: radial-gradient(circle at center, #0f0c29, #302b63, #24243e);
+      overflow-x: hidden;
+    }
+    /* Animated background circles */
+    .circle {
+      position: absolute;
+      border-radius: 50%;
+      opacity: 0.3;
+      animation: pulse 2s infinite ease-in-out;
+    }
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity:0.3; }
+      50% { transform: scale(1.5); opacity:0.6; }
+    }
+    /* Neon Card */
+    .card {
+      background: rgba(0,0,0,0.3);
+      border: 1px solid #6366f1;
+      box-shadow: 0 0 15px #6366f1;
+      border-radius: 16px;
+      padding: 20px;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+    .card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 0 30px #a78bfa;
+    }
+    /* Buttons */
+    .btn {
+      background: #6366f1;
+      padding: 10px 16px;
+      border-radius: 10px;
+      font-weight: 600;
+      text-decoration: none;
+      color: white;
+      transition: all 0.3s;
+    }
+    .btn:hover {
+      background: #a78bfa;
+      transform: scale(1.05);
+    }
+    /* Music Player */
+    #musicControl {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      z-index: 999;
+    }
+  </style>
 </head>
-<body class="bg-gray-900 text-white min-h-screen flex flex-col items-center p-6">
-  <h1 class="text-3xl font-bold mb-4">Roblox VIP Server Discover</h1>
-  <p class="text-gray-400 mb-6">Add your VIP server link and explore others!</p>
+<body class="relative">
 
-  <!-- Add Server Form -->
-  <div class="bg-gray-800 p-4 rounded-xl shadow-lg mb-6 w-full max-w-md">
-    <h2 class="text-xl mb-2">Add a Server</h2>
-    <input id="gameName" type="text" placeholder="Game Name" class="w-full p-2 rounded-lg text-black mb-2">
-    <input id="serverLink" type="text" placeholder="VIP Server Link" class="w-full p-2 rounded-lg text-black mb-2">
-    <button onclick="addServer()" class="bg-green-500 hover:bg-green-600 px-4 py-2 rounded-lg w-full">Add Server</button>
+  <!-- Background Circles -->
+  <div id="bgContainer"></div>
+
+  <!-- Music Player -->
+  <div id="musicControl">
+    <button id="toggleMusic" class="btn">Play Music</button>
+    <audio id="bgMusic" loop src="https://p.scdn.co/mp3-preview/7mjbqtW3ELCMgFY21XpZj3?cid=public"></audio>
   </div>
 
-  <!-- Discover Servers -->
-  <h2 class="text-2xl mb-3">Discover Servers</h2>
-  <div id="serverList" class="grid gap-4 w-full max-w-2xl"></div>
+  <div class="container mx-auto p-6 relative z-10">
+    <h1 class="text-4xl font-bold text-center mb-6">Roblox VIP Server Discover</h1>
+    <p class="text-center text-gray-300 mb-8">Add your server & explore the coolest Roblox VIP servers!</p>
+
+    <!-- Add Server Form -->
+    <div class="max-w-md mx-auto mb-8">
+      <input id="gameName" type="text" placeholder="Game Name" class="w-full p-2 rounded-lg mb-2 text-black">
+      <input id="serverLink" type="text" placeholder="VIP Server Link" class="w-full p-2 rounded-lg mb-2 text-black">
+      <button onclick="addServer()" class="w-full btn">Add Server</button>
+    </div>
+
+    <!-- Server List -->
+    <div id="serverList" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
+  </div>
 
   <script>
-    // Default servers
+    // Animated background circles
+    const bgContainer = document.getElementById('bgContainer');
+    for(let i=0;i<20;i++){
+      const circle = document.createElement('div');
+      circle.className='circle';
+      circle.style.width= `${50+Math.random()*100}px`;
+      circle.style.height= `${50+Math.random()*100}px`;
+      circle.style.top= `${Math.random()*100}%`;
+      circle.style.left= `${Math.random()*100}%`;
+      circle.style.background= `hsl(${Math.random()*360},70%,50%)`;
+      circle.style.animationDuration= `${1+Math.random()*2}s`;
+      bgContainer.appendChild(circle);
+    }
+
+    // Music control
+    const music = document.getElementById('bgMusic');
+    const toggle = document.getElementById('toggleMusic');
+    toggle.addEventListener('click', ()=> {
+      if(music.paused){ music.play(); toggle.textContent='Pause Music'; }
+      else{ music.pause(); toggle.textContent='Play Music'; }
+    });
+
+    // Server list functionality
     let servers = [
-      { gameName: "War Tycoon", serverLink: "https://www.roblox.com/games/537413528?privateServerLinkCode=_A_EdvICnPAbeoSEloV73_RERu1UEdGX" },
-      { gameName: "Blox Fruits", serverLink: "https://www.roblox.com/games/2753915549/UPDATE-Blox-Fruits?privateServerLinkCode=46411615760035887249335695162756" },
-      { gameName: "Da Hood", serverLink: "https://www.roblox.com/games/2788229376?privateServerLinkCode=90744995555678503019206056906449" },
-      { gameName: "Build A Boat", serverLink: "https://www.roblox.com/games/537413528?privateServerLinkCode=_A_EdvICnPAbeoSEloV73_RERu1UEdGX" },
-      { gameName: "Greenville", serverLink: "https://www.roblox.com/games/891852901?privateServerLinkCode=32444202380823111292151449369638" },
-      { gameName: "Ink Games", serverLink: "https://www.roblox.com/games/99567941238278?privateServerLinkCode=99793299979057599828677053633339" }
+      {gameName: "War Tycoon", serverLink: "https://www.roblox.com/games/537413528?privateServerLinkCode=_A_EdvICnPAbeoSEloV73_RERu1UEdGX"},
+      {gameName: "Blox Fruits", serverLink: "https://www.roblox.com/games/2753915549/UPDATE-Blox-Fruits?privateServerLinkCode=46411615760035887249335695162756"},
+      {gameName: "Da Hood", serverLink: "https://www.roblox.com/games/2788229376?privateServerLinkCode=90744995555678503019206056906449"},
+      {gameName: "Build A Boat", serverLink: "https://www.roblox.com/games/537413528?privateServerLinkCode=_A_EdvICnPAbeoSEloV73_RERu1UEdGX"},
+      {gameName: "Greenville", serverLink: "https://www.roblox.com/games/891852901?privateServerLinkCode=32444202380823111292151449369638"},
+      {gameName: "Ink Games", serverLink: "https://www.roblox.com/games/99567941238278?privateServerLinkCode=99793299979057599828677053633339"}
     ];
 
-    // Load saved servers from localStorage
     const saved = JSON.parse(localStorage.getItem('servers')) || [];
     servers = [...servers, ...saved];
 
-    function addServer() {
-      const name = document.getElementById("gameName").value.trim();
-      const link = document.getElementById("serverLink").value.trim();
-      if (!name || !link) return alert("Please fill out both fields.");
-      servers.push({ gameName: name, serverLink: link });
-      localStorage.setItem('servers', JSON.stringify(servers.slice(6))); // only save user-added
-      document.getElementById("gameName").value = "";
-      document.getElementById("serverLink").value = "";
+    function addServer(){
+      const name=document.getElementById('gameName').value.trim();
+      const link=document.getElementById('serverLink').value.trim();
+      if(!name||!link){return alert('Fill both fields');}
+      servers.push({gameName:name,serverLink:link});
+      localStorage.setItem('servers',JSON.stringify(servers.slice(6))); // save user-added only
+      document.getElementById('gameName').value='';
+      document.getElementById('serverLink').value='';
       renderServers();
     }
 
-    function renderServers() {
-      const list = document.getElementById("serverList");
-      list.innerHTML = "";
-      servers.forEach(s => {
-        list.innerHTML += `
-          <div class="bg-gray-800 p-4 rounded-xl shadow-lg flex justify-between items-center">
-            <div>
-              <h3 class="text-lg font-bold">${s.gameName}</h3>
-              <p class="text-sm text-gray-400">${s.serverLink}</p>
-            </div>
-            <a href="${s.serverLink}" target="_blank" class="bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded-lg">Open</a>
+    function renderServers(){
+      const list=document.getElementById('serverList');
+      list.innerHTML='';
+      servers.forEach(s=>{
+        const card=document.createElement('div');
+        card.className='card p-4 flex justify-between items-center';
+        card.innerHTML=`
+          <div>
+            <h3 class="text-xl font-bold">${s.gameName}</h3>
+            <p class="text-gray-300 text-sm break-all">${s.serverLink}</p>
           </div>
+          <a href="${s.serverLink}" target="_blank" class="btn">Open</a>
         `;
+        list.appendChild(card);
       });
     }
 
