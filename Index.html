@@ -1,48 +1,78 @@
-<!doctype html>
-
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Join My Roblox Servers</title>
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
-    body{margin:0;font-family:'Poppins',sans-serif;background:linear-gradient(135deg,#0f172a,#1e293b);color:white;display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px}
-    .container{max-width:900px;width:100%;text-align:center}
-    h1{font-size:2rem;margin-bottom:10px}
-    p{color:#cbd5e1;margin-bottom:30px}
-    .card-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:20px}
-    .card{background:rgba(255,255,255,0.05);padding:20px;border-radius:16px;box-shadow:0 8px 24px rgba(0,0,0,0.4);transition:transform 0.2s ease,box-shadow 0.2s ease}
-    .card:hover{transform:translateY(-6px);box-shadow:0 12px 30px rgba(0,0,0,0.6)}
-    .card h2{font-size:1.2rem;margin:0 0 10px 0}
-    .card p{font-size:0.95rem;margin-bottom:16px;color:#94a3b8}
-    .btn{display:inline-block;padding:10px 16px;background:#6366f1;color:white;text-decoration:none;font-weight:600;border-radius:10px;transition:background 0.2s}
-    .btn:hover{background:#4f46e5}
-  </style>
+  <meta charset="UTF-8">
+  <title>Roblox Server Discover</title>
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-  <div class="container">
-    <h1>My Roblox Private Servers</h1>
-    <p>Choose a game below and click <strong>Open</strong> to join instantly.</p><div class="card-grid">
-  <div class="card">
-    <h2>war Tycoon</h2>
-    <p>Exclusive private server invite for war Tycoon.</p>
-    <a href="https://www.roblox.com/games/4639625707?privateServerLinkCode=99429934459857698217642088347634" target="_blank" class="btn">Open</a>
+<body class="bg-gray-900 text-white min-h-screen flex flex-col items-center p-6">
+  <h1 class="text-3xl font-bold mb-4">Roblox VIP Server Discover</h1>
+
+  <!-- Username Auth -->
+  <div class="bg-gray-800 p-4 rounded-xl shadow-lg mb-6 w-full max-w-md">
+    <h2 class="text-xl mb-2">Login with Roblox Username</h2>
+    <input id="username" type="text" placeholder="Enter Roblox Username"
+      class="w-full p-2 rounded-lg text-black mb-2">
+    <button onclick="login()"
+      class="bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded-lg w-full">Login</button>
   </div>
 
-  <div class="card">
-    <h2>Blox Fruits</h2>
-    <p>Play Blox Fruits in my private server.</p>
-    <a href="https://www.roblox.com/games/2753915549/UPDATE-Blox-Fruits?privateServerLinkCode=46411615760035887249335695162756" target="_blank" class="btn">Open</a>
+  <!-- Add Server -->
+  <div id="addServerBox" class="hidden bg-gray-800 p-4 rounded-xl shadow-lg mb-6 w-full max-w-md">
+    <h2 class="text-xl mb-2">Add Your VIP Server</h2>
+    <input id="gameName" type="text" placeholder="Game Name"
+      class="w-full p-2 rounded-lg text-black mb-2">
+    <input id="serverLink" type="text" placeholder="VIP Server Link"
+      class="w-full p-2 rounded-lg text-black mb-2">
+    <button onclick="addServer()"
+      class="bg-green-500 hover:bg-green-600 px-4 py-2 rounded-lg w-full">Add Server</button>
   </div>
 
-  <div class="card">
-    <h2>Da Hood</h2>
-    <p>Join me in Da Hood with this invite link.</p>
-    <a href="https://www.roblox.com/games/2788229376?privateServerLinkCode=90744995555678503019206056906449" target="_blank" class="btn">Open</a>
-  </div>
-</div>
+  <!-- Discover Servers -->
+  <h2 class="text-2xl mb-3">Discover Servers</h2>
+  <div id="serverList" class="grid gap-4 w-full max-w-2xl"></div>
 
-  </div>
+  <script>
+    let servers = [];
+
+    function login() {
+      const user = document.getElementById("username").value.trim();
+      if(user) {
+        alert("Welcome " + user + "! You can now add your servers.");
+        document.getElementById("addServerBox").classList.remove("hidden");
+      }
+    }
+
+    function addServer() {
+      const gameName = document.getElementById("gameName").value.trim();
+      const serverLink = document.getElementById("serverLink").value.trim();
+
+      if (gameName && serverLink) {
+        servers.push({ gameName, serverLink });
+        renderServers();
+        document.getElementById("gameName").value = "";
+        document.getElementById("serverLink").value = "";
+      } else {
+        alert("Please fill out both fields.");
+      }
+    }
+
+    function renderServers() {
+      const list = document.getElementById("serverList");
+      list.innerHTML = "";
+      servers.forEach((s, i) => {
+        list.innerHTML += `
+          <div class="bg-gray-800 p-4 rounded-xl shadow-lg flex justify-between items-center">
+            <div>
+              <h3 class="text-lg font-bold">${s.gameName}</h3>
+              <p class="text-sm text-gray-400">${s.serverLink}</p>
+            </div>
+            <a href="${s.serverLink}" target="_blank"
+              class="bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded-lg">Join</a>
+          </div>
+        `;
+      });
+    }
+  </script>
 </body>
 </html>
